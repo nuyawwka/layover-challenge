@@ -1,0 +1,55 @@
+graph = {
+         'NY'  : ['CA', 'CHI', 'CHL'],
+         'CHI' : ['CA'],
+         'CHL' : ['CA', 'LAX'],
+         'LAX' : ['CA'],
+        }
+
+legs  = {
+         ('NY' , 'CA' ) : ( 530, 1100),
+         ('NY' , 'CHI') : (1030, 1200),
+         ('NY' , 'CHL') : (1030, 1200),
+         ('CHI', 'CA' ) : (1200, 1900),
+         ('CHL', 'CA' ) : (1200, 1900),
+         ('CHL', 'LAX') : (1200, 1900),
+         ('LAX', 'CA' ) : (1900, 2400),
+        }
+
+#--------------------------------------------------
+
+def get_routes(start, dest, num_stops):
+    que = [(start, [start])]
+    rts = []
+    vis = {start}
+    k   = num_stops + 2
+
+    while que:
+        city, path = que.pop(0)
+        
+        for i in graph.get(city, []):
+            p = path + [i]
+            
+            if num_stops and len(p) >= 3:
+                _, arr = legs[(p[-3], p[-2])]
+                dep, _ = legs[(p[-2], p[-1])]
+                
+                if arr > dep:
+                    continue
+
+            if len(p) < k and i not in vis:
+                vis.add(i)
+                que.append((i, p))
+            elif len(p) == k and i == dest:
+                rts.append(p)
+
+    return rts
+        
+#--------------------------------------------------
+
+rts0 = get_routes('NY', 'CA', 0)
+rts1 = get_routes('NY', 'CA', 1)
+rts2 = get_routes('NY', 'CA', 2)
+
+print(rts0)
+print(rts1)
+print(rts2)
